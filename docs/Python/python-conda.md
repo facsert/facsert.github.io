@@ -127,24 +127,53 @@ Anaconda 是一个 python 版本管理器, 能快速创建虚拟环境, 管理 p
 
 国内源
 
-```log
+[南方科大源](https://mirrors.sustech.edu.cn/help/anaconda.html#introduction)
+[中科大源](https://mirrors.ustc.edu.cn/help/anaconda.html)
+[清华源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)
+
+```bash
 channels:
   - defaults
 show_channel_urls: true
-ssl_verify: false
 default_channels:
-  - https://mirrors.bfsu.edu.cn/anaconda/pkgs/main
-  - https://mirrors.bfsu.edu.cn/anaconda/pkgs/r
-  - https://mirrors.bfsu.edu.cn/anaconda/pkgs/msys2
-custom_channels:
-  conda-forge: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  msys2: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  bioconda: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  menpo: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  pytorch: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  pytorch-lts: https://mirrors.bfsu.edu.cn/anaconda/cloud
-  simpleitk: https://mirrors.bfsu.edu.cn/anaconda/cloud
+  # 中科大
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/main
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/free
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/r
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/pro
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/msys2
+  
+  # 南方科技
+  - https://mirrors.sustech.edu.cn/anaconda/pkgs/main
+  - https://mirrors.sustech.edu.cn/anaconda/pkgs/free
+  - https://mirrors.sustech.edu.cn/anaconda/pkgs/r
+  - https://mirrors.sustech.edu.cn/anaconda/pkgs/msys2
+  
+  # 清华
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
 
+custom_channels:
+  conda-forge: https://mirrors.sustech.edu.cn/anaconda/cloud
+  msys2: https://mirrors.sustech.edu.cn/anaconda/cloud
+  bioconda: https://mirrors.sustech.edu.cn/anaconda/cloud
+  menpo: https://mirrors.sustech.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.sustech.edu.cn/anaconda/cloud
+  simpleitk: https://mirrors.sustech.edu.cn/anaconda/cloud
+  nvidia: https://mirrors.sustech.edu.cn/anaconda-extra/cloud
+```
+
+```bash
+# 自定义版本存放位置
+envs_dirs:
+  - D:\Mimiforge\envs
+
+# 自定义包存放位置
+pkgs_dirs:
+  - D:\Mimiforge\pkgs
 ```
 
 ## miniforge

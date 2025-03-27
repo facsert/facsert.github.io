@@ -107,6 +107,19 @@ Options:
 创建 `docker-compose.yml` 定义容器, 然后一键拉起多个复杂容器, 且可以重复使用  
 [Docker Compose 离线安装包](https://github.com/docker/compose/releases)
 
+```bash
+ # 下载离线工具后, 改名添加权限, 放到 docker 插件路径下
+ $ mv docker-compose-linux-x86_62 docker-compose
+ $ chmod +x docker-compose
+ $ mkdir -p /usr/lib/docker/cli-plugins
+ $ cp docker-compose /usr/lib/docker/cli-plugins/
+
+ $ docker compose version
+ > Docker Compose version v2.33.1
+```
+
+[docker-compose 配置关键字](https://docs.docker.com/reference/compose-file/)
+
 ```yaml
 # docker compose v1.27 后 无需 version 关键字
 version: "3"
@@ -165,6 +178,8 @@ services:
 services:
   backend:
     image: example/database
+    environment:
+      - TZ=Asia/Shanghai  # 设置时区
     volumes:
       - db-data:/etc/data
     networks:
@@ -182,4 +197,52 @@ volumes:
   db-data:
 networks:
   db-network:
+```
+
+指定 dockerfile 文件 build 并拉起服务
+
+```bash
+ # 配置环境变量
+ echo GIT_USERNAME="xxxx" > .env
+ echo GIT_PASSWORD="xxxx" >> .env
+ echo TAG=$(date +"%Y%m%d") >> .env
+```
+
+docker-compose 配置文件
+
+```yml
+services:
+
+  backend1:
+    build: 
+      dockerfile: ./backend/Dockerfile
+      context: .
+      no_cache: true
+      args:
+        USERNAME: $GIT_USERNAME
+        PASSWORD: $GIT_PASSWORD
+    image: backend:${TAG}
+    container_name: backend1
+    restart: always
+    volumes:
+      - /home/desktop/log/backend/8091:/root/backend/log
+    ports:
+      - 8091:8000
+
+  backend2:
+    depends_on:
+      - backend1
+    image: backend:${TAG}
+    container_name: backend2
+    restart: always
+    volumes:
+      - /home/desktop/log/backend/8092:/root/backend/log
+    ports:
+      - 8092:8000
+```
+
+```bash
+ # build 镜像和拉起容器
+ $ docker compose build
+ $ docker compose up -d
 ```

@@ -20,6 +20,9 @@ description: "NodeJS 基本配置"
  $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
  $ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
+ # 设置 nvm 镜像源
+ $ export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node/
+
  $ nvm install 20
  $ nvm ls
  $ nvm use 20
@@ -165,4 +168,46 @@ yarn 的使用与 npm 类似
  >   - yrm
 
  $ yarn info <package>                           # 查看包的信息
+```
+
+## Windows fnm
+
+fnm 是 node 版本管理工具, 支持 window(n 不支持 windows)
+
+```powershell
+# windows 安装 fnm
+winget install Schniz.fnm
+
+# linux macos 安装 fnm(需要先安装 curl 和 unzip)
+curl -o- https://fnm.vercel.app/install | bash
+
+# 获取本例 node 版本(本地已安装版本显示 system)
+fnm list
+
+# 显示可安装的版本
+fnm list-remote
+
+# 下载指定版本
+fnm install 20
+
+# 设置环境变量 fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+# 使用临时使用版本
+fnm use 20
+
+# 设置命令行开启默认版本
+fnm default 20
+```
+
+注: 要使 fnm 环境变量持续生效需修改 powershell 配置文件
+
+```powershell
+# 若 powershell 配置不存在则生成
+if (-not (Test-Path $profile)) { New-Item $profile -Force }
+
+# 查看配置路径
+echo $profile
+> D:\Document\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+
+# 将以下命令写入文件最后一行
+fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
 ```
