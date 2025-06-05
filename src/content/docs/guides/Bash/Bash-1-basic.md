@@ -12,8 +12,6 @@ description: "Bash 基本语法"
 
 [BASH 教程](https://wangdoc.com/bash/)
 
-## Table of Contents
-
 ## 介绍
 
 Bash 是一种 Linux 和 macOS 上的命令行 Shell，它是 Linux 系统中使用最广泛的 Shell  

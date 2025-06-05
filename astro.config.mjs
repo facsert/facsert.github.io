@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService  } from 'astro/config';
 
 import starlight from '@astrojs/starlight';
 import catppuccin from "@catppuccin/starlight";
@@ -9,6 +9,9 @@ import starlightThemeNova from 'starlight-theme-nova'
 export default defineConfig({
     site: 'https://facsert.github.io',
     base: '/',
+	image: {
+        service: passthroughImageService(),
+    },
 	integrations: [
 		starlight({
 			title: 'facsert',
