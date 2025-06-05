@@ -40,16 +40,22 @@ services:
     restart: always
     # 设置主机名(使用本机 IP 避免域名解析问题)
     hostname: "192.168.1.100"
-    # 设置 gitlab 环境变量
+    # 设置 gitlab 环境变量和 contain registry
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://192.168.1.100:80'
         gitlab_rails['gitlab_shell_ssh_port'] = 2424
+
+        registry_external_url 'http://192.168.1.100:5005'
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['registry_port'] = "5005"
+        gitlab_rails['registry_api_url'] = "http://192.168.1.100:5005"
     # 映射端口
     ports:
       - "80:80"
       - "8443:443"
       - "2424:22"
+      - "5005:5005"
     # 挂载数据卷
     volumes:
       - "/home/gitlab/etc:/etc/gitlab"
@@ -195,11 +201,19 @@ executor 选择为 docker, 需要使用 docker 镜像, 配置使用本地镜像
  # ubuntu/debian 添加 apt 源
  $ curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
  
+ # 使用安装包安装 gitlab-runner
+ $ curl -LJO "https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/deb/gitlab-runner-helper-images.deb"
+ $ curl -LJO "https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/deb/gitlab-runner_amd64.deb"
+
  # 安装 gitlab-runner
  $ sudo apt install gitlab-runner
 
  # gitlab 新增 runner 复制注册命令到机器上执行
  $ sudo gitlab-runner register  --url http://xxxx --token xxxx
+
+ # gitlab runner 加入 docker 组(CI/CD 无需 root 权限可使用 docker 命令)
+ # sudo groupadd docker 创建 docker 组
+ $ sudo usermod -aG docker gitlab-runner
 ```
 
 ## gitlab CI/CD
@@ -306,4 +320,57 @@ stage:
   - step1
   - step2
   - step3
+```
+
+示例
+注: 配置中 `CI_IMAGE_NAME` `CI_DEPLOY_PASSWORD` `CI_REGISTRY` `CI_DEPLOY_USER` 等变量需要在 gitlab 项目设置中设置
+
+```yml
+default:
+  tags:
+    - shell
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  TAG: $CI_COMMIT_SHORT_SHA
+  DOCKER_BUILDKIT: 1
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store/
+  policy: pull-push
+
+build_job:
+  stage: build
+  script:
+    - echo "start build $CI_IMAGE_NAME:$TAG"
+    - docker build -t $CI_IMAGE_NAME:$TAG .
+    - echo $CI_DEPLOY_PASSWORD | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin 
+    - docker push ${CI_IMAGE_NAME}:$TAG
+    - echo "build ${CI_IMAGE_NAME}:${TAG} success"
+
+test_job1:
+  stage: test
+  script:
+    - echo "run test job1"
+    - echo "test job1 success"
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "deploy $CI_IMAGE_NAME:$TAG"
+    - echo "TAG=$TAG" > .env
+    - echo "IMAGE_NAME=$CI_IMAGE_NAME" >> .env
+    - echo $CI_DEPLOY_PASSWORD | docker login $CI_REGISTRY -u $CI_DEPLOY_USER --password-stdin 
+    - docker pull ${CI_IMAGE_NAME}:$TAG
+    - docker compose up -d
+    - docker ps -a | grep $CI_IMAGE_NAME
+    - echo "deploy success"
 ```
