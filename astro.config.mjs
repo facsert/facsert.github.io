@@ -8,7 +8,7 @@ import starlightThemeNova from 'starlight-theme-nova'
 // https://astro.build/config
 export default defineConfig({
     site: 'https://facsert.github.io',
-    // base: '/',
+    base: '/',
 	image: {
         service: passthroughImageService(),
     },
